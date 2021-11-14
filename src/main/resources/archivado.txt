@@ -1,0 +1,96 @@
+/*
+
+
+  @Override
+  public void allCalculadora(RoutingContext routingContext) {
+    JsonArray arr = new JsonArray();
+    userMap.forEach((k, v) -> arr.add(v));
+    routingContext
+      .response()
+      .putHeader("content-type", "application/json")
+      .end(arr.encodePrettily());
+
+  }
+ */
+
+/*
+ffdd
+
+
+
+
+
+  public Future <Void> handlePostCalculadoraFuture(RoutingContext routingContext) {
+    CalculadoraModel calculadoraModel = Json.decodeValue(routingContext.getBodyAsString(), CalculadoraModel.class);
+
+    RouterBuilder.create(MainVerticle.vertx, "src/main/resources/calculadora.yaml")
+      .onSuccess(routerBuilder -> {
+        calculadoraModel.setContext(routerBuilder.getOpenAPI().getOpenAPI());
+        addCalculadora(JsonObject.mapFrom(calculadoraModel));
+
+        LG.info("Post : {}", calculadoraModel.toString());
+        return (Future)   routingContext.response()
+          .setStatusCode(201)
+          .putHeader("content-type", "application/json; charset=utf-8")
+          .end(Json.encodePrettily(calculadoraModel));
+
+      })
+        .onFailure(err -> {
+        });
+
+        return routingContext.response()
+        .setStatusCode(201)
+        .putHeader("content-type", "application/json; charset=utf-8")
+        .end(Json.encodePrettily(calculadoraModel));
+        }
+
+
+
+
+ */
+
+
+/*
+
+  @Override
+  public void handlePostCalculadora(RoutingContext routingContext) {
+    final CalculadoraModel calculadora = Json.decodeValue(routingContext.getBodyAsString(),
+      CalculadoraModel.class);
+
+    addCalculadora(JsonObject.mapFrom(calculadora));
+    LG.info("Post : {}", calculadora.toString());
+
+    //userMap.put("idUser", JsonObject.mapFrom(user));
+    routingContext.response()
+      .setStatusCode(201)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(Json.encodePrettily(calculadora));
+
+
+  }
+ */
+
+
+/*
+
+  @Override
+  public void handleGetCalculadora(RoutingContext routingContext) {
+    String calculadoraID = routingContext.request().getParam("id");
+    HttpServerResponse response = routingContext.response();
+    if (calculadoraID == null) {
+      sendError(400, response);
+    } else {
+      JsonObject jsonCalcu = userMap.get(calculadoraID);
+      LG.info("Get ID: {}", jsonCalcu.toString());
+
+      if (jsonCalcu == null) {
+        sendError(404, response);
+      } else {
+        response.putHeader("content-type", "application/json")
+          .end(jsonCalcu
+            .encodePrettily());
+      }
+    }
+
+  }
+ */
