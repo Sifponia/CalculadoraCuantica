@@ -20,7 +20,7 @@ import java.util.Map;
 public class ImpHandleRouterService implements IHandleRouter {
 
   private static final Logger LG = LoggerFactory.getLogger(ImpHandleRouterService.class);
-  private Map<String, JsonObject> userMap = new HashMap<>();
+  private Map<String, JsonObject> calculadoraMap = new HashMap<>();
   private ImpOperacionAritmetica io = new ImpOperacionAritmetica();
 
 
@@ -31,7 +31,7 @@ public class ImpHandleRouterService implements IHandleRouter {
   }
 
   @Override
-  public void initialData() {
+   public void initialData() {
 
     double result = 0;
 
@@ -72,7 +72,7 @@ public class ImpHandleRouterService implements IHandleRouter {
 
   @Override
   public void addCalculadora(JsonObject calculadora) {
-    userMap.put(calculadora.getString("id"), calculadora);
+    calculadoraMap.put(calculadora.getString("id"), calculadora);
 
   }
 
@@ -91,17 +91,15 @@ public class ImpHandleRouterService implements IHandleRouter {
         calculadoraModel.setResultado(result);
 
         addCalculadora(JsonObject.mapFrom(calculadoraModel));
-        LG.info("Post : {}", calculadoraModel.toString(), " OPERACION: {} ", calculadoraModel.getOperacion());
+        LG.info("Post : ✔️✔️ {}", calculadoraModel.toString(), " OPERACION: {} ", calculadoraModel.getOperacion());
 
+        routingContext.response()
+          .setStatusCode(201)
+          .putHeader("content-type", "application/json; charset=utf-8")
+          .end(Json.encodePrettily(calculadoraModel));
       })
       .onFailure(err -> {
       });
-
-    addCalculadora(JsonObject.mapFrom(calculadoraModel));
-    routingContext.response()
-      .setStatusCode(201)
-      .putHeader("content-type", "application/json; charset=utf-8")
-      .end(Json.encodePrettily(calculadoraModel));
 
 
   }
@@ -110,7 +108,7 @@ public class ImpHandleRouterService implements IHandleRouter {
   @Override
   public Future<Void> allCalculadoraFuture(RoutingContext routingContext) {
     JsonArray arr = new JsonArray();
-    userMap.forEach((k, v) -> arr.add(v));
+    calculadoraMap.forEach((k, v) -> arr.add(v));
     LG.info("Get Calculadora: {}", arr.toString());
 
     return routingContext
@@ -130,10 +128,8 @@ public class ImpHandleRouterService implements IHandleRouter {
     if (calculadoraID == null) {
       sendError(400, response);
     } else {
-
-
-      jsonCalcu = userMap.get(calculadoraID);
-      LG.info("Get ID: {}", jsonCalcu.toString());
+      jsonCalcu = calculadoraMap.get(calculadoraID);
+      LG.info("Get ID: \uD83D\uDD0E\uD83D\uDD0E {}", jsonCalcu.toString());
 
       if (jsonCalcu == null) {
         sendError(404, response);
@@ -144,31 +140,9 @@ public class ImpHandleRouterService implements IHandleRouter {
 
   }
 
+
   @Override
   public void handlePutCalculadora(RoutingContext routingContext) {
-    String calculadoraID = routingContext.request().getParam("id");
-    HttpServerResponse response = routingContext.response();
-
-    if (calculadoraID == null) {
-      sendError(400, response);
-    } else {
-      JsonObject jsonCalcu = routingContext.getBodyAsJson();
-      LG.info("PUT ID: {}", jsonCalcu.toString());
-
-      if (jsonCalcu == null) {
-        sendError(400, response);
-      } else {
-
-
-        userMap.put(calculadoraID, jsonCalcu);
-        response.end();
-      }
-    }
-
-  }
-
-
-  public void handlePutCalculadoratest(RoutingContext routingContext) {
     String calculadoraID = routingContext.request().getParam("id");
     HttpServerResponse response = routingContext.response();
     JsonObject object;
@@ -176,32 +150,21 @@ public class ImpHandleRouterService implements IHandleRouter {
     if (calculadoraID == null) {
       sendError(400, response);
     } else {
-      JsonObject jsonCalcu = routingContext.getBodyAsJson();
+
+      JsonObject jsonCalu2 = calculadoraMap.get(calculadoraID);
       object = new JsonObject();
-      object.put("id", Integer.valueOf(calculadoraID));
-      object.put("operacion", jsonCalcu.getValue("operacion"));
-      object.put("numeroOne", jsonCalcu.getValue("numeroOne"));
-      object.put("numeroTwo", jsonCalcu.getValue("numeroTwo"));
+      JsonObject jsonCalcu = routingContext.getBodyAsJson();
 
-      String srtNumberOne = String.valueOf(jsonCalcu.getValue("numeroOne").toString());
-      double x = Double.parseDouble(srtNumberOne);
+      jsonCalcu(object, jsonCalcu, calculadoraID);
+      object.put("context", jsonCalu2.getValue("context"));
 
-      String srtNumberTwo = String.valueOf(jsonCalcu.getValue("numeroTwo").toString());
-      double y = Double.parseDouble(srtNumberTwo);
-
-      String op = String.valueOf(jsonCalcu.getValue("operacion").toString());
-      double result = io.operacionAritmetica(x, y, op);
-
-
-      object.put("resultado", result);
-      object.put("context", jsonCalcu.getValue("context"));
-      LG.info("PUT ID: {}", object.toString());
+      LG.info("PUT ID: ✔️ ✔️{}", object.toString());
 
       if (jsonCalcu == null) {
         sendError(400, response);
       } else {
 
-        userMap.put(calculadoraID, object);
+        calculadoraMap.put(calculadoraID, object);
         response.end();
       }
     }
@@ -217,8 +180,8 @@ public class ImpHandleRouterService implements IHandleRouter {
     if (calculadoraID == null) {
       sendError(400, response);
     } else {
-      JsonObject jsonCalcu = userMap.remove(calculadoraID);
-      LG.info("DELETE : {}", jsonCalcu.toString());
+      JsonObject jsonCalcu = calculadoraMap.remove(calculadoraID);
+      LG.info("DELETE  \uD83C\uDD91 \uD83C\uDD91: {}", jsonCalcu.toString());
 
       if (jsonCalcu == null) {
         sendError(404, response);
@@ -227,10 +190,34 @@ public class ImpHandleRouterService implements IHandleRouter {
       }
     }
   }
+
+  private JsonObject jsonCalcu(JsonObject object, JsonObject jsonCalcu, String calculadoraID) {
+
+    object.put("id", Integer.valueOf(calculadoraID));
+    object.put("operacion", jsonCalcu.getValue("operacion"));
+    object.put("numeroOne", jsonCalcu.getValue("numeroOne"));
+    object.put("numeroTwo", jsonCalcu.getValue("numeroTwo"));
+
+
+    String srtNumberOne = String.valueOf(jsonCalcu.getValue("numeroOne").toString());
+    double x = Double.parseDouble(srtNumberOne);
+
+    String srtNumberTwo = String.valueOf(jsonCalcu.getValue("numeroTwo").toString());
+    double y = Double.parseDouble(srtNumberTwo);
+
+    String op = String.valueOf(jsonCalcu.getValue("operacion").toString());
+    double result = io.operacionAritmetica(x, y, op);
+    object.put("resultado", result);
+
+
+    return object;
+  }
+
+
 }
 
 
-/*
+/*::::::::::::::::::::::::::::::::::::::::
 
 
   @Override
@@ -261,3 +248,184 @@ public class ImpHandleRouterService implements IHandleRouter {
   }
 
  */
+
+
+
+
+/*:::::::::::::::::::::::::::::::::::::::::::
+
+ public void handlePutCalculadoratest(RoutingContext routingContext) {
+    String calculadoraID = routingContext.request().getParam("id");
+
+
+    //-----
+    final CalculadoraModel calculadoraModel = Json.decodeValue(routingContext.getBodyAsString(),
+      CalculadoraModel.class);
+
+    //---
+
+    HttpServerResponse response = routingContext.response();
+    JsonObject object;
+
+    if (calculadoraID == null) {
+      sendError(400, response);
+    } else {
+      JsonObject jsonCalcu = routingContext.getBodyAsJson();
+
+      jsonCalcu = userMap.get(calculadoraID);
+
+      System.out.println( ">>>>>>>" + jsonCalcu.toString());
+
+
+      object = new JsonObject();
+      object.put("id", Integer.valueOf(calculadoraID));
+      object.put("operacion", jsonCalcu.getValue("operacion"));
+      object.put("numeroOne", jsonCalcu.getValue("numeroOne"));
+      object.put("numeroTwo", jsonCalcu.getValue("numeroTwo"));
+
+
+
+      String srtNumberOne = String.valueOf(jsonCalcu.getValue("numeroOne").toString());
+      double x = Double.parseDouble(srtNumberOne);
+
+      String srtNumberTwo = String.valueOf(jsonCalcu.getValue("numeroTwo").toString());
+      double y = Double.parseDouble(srtNumberTwo);
+
+      String op = String.valueOf(jsonCalcu.getValue("operacion").toString());
+      double result = io.operacionAritmetica(x, y, op);
+      object.put("resultado", result);
+
+
+
+      object.put("context", jsonCalcu.getString("context"));
+      LG.info("PUT ID: ✔️ ✔️{}", object.toString());
+
+      if (jsonCalcu == null) {
+        sendError(400, response);
+      } else {
+
+        userMap.put(calculadoraID, object);
+        response.end();
+      }
+    }
+
+  }
+ */
+
+
+/*V2::::::::::::::::::::::::::::::::::::::
+
+
+
+  public void handlePutCalculadoratest(RoutingContext routingContext) {
+    String calculadoraID = routingContext.request().getParam("id");
+    HttpServerResponse response = routingContext.response();
+    JsonObject object;
+
+    if (calculadoraID == null) {
+      sendError(400, response);
+    } else {
+
+      object = new JsonObject();
+      JsonObject jsonCalu2 = userMap.get(calculadoraID);
+      JsonObject jsonCalcu = routingContext.getBodyAsJson();
+
+      object.put("id", Integer.valueOf(calculadoraID));
+      object.put("operacion", jsonCalcu.getValue("operacion"));
+      object.put("numeroOne", jsonCalcu.getValue("numeroOne"));
+      object.put("numeroTwo", jsonCalcu.getValue("numeroTwo"));
+
+
+      String srtNumberOne = String.valueOf(jsonCalcu.getValue("numeroOne").toString());
+      double x = Double.parseDouble(srtNumberOne);
+
+      String srtNumberTwo = String.valueOf(jsonCalcu.getValue("numeroTwo").toString());
+      double y = Double.parseDouble(srtNumberTwo);
+
+      String op = String.valueOf(jsonCalcu.getValue("operacion").toString());
+      double result = io.operacionAritmetica(x, y, op);
+      object.put("resultado", result);
+
+
+      object.put("context", jsonCalu2.getValue("context"));
+
+
+      LG.info("PUT ID: ✔️ ✔️{}", object.toString());
+
+      if (jsonCalcu == null) {
+        sendError(400, response);
+      } else {
+
+        userMap.put(calculadoraID, object);
+        response.end();
+      }
+    }
+
+  }
+
+
+
+ */
+
+
+/*Fragmento Put::::::::::::::::::::::::::::::::
+
+
+  ///--------------
+
+
+
+
+
+      /*
+      object = new JsonObject();
+      JsonObject jsonCalcu = routingContext.getBodyAsJson();
+
+      object.put("id", Integer.valueOf(calculadoraID));
+      object.put("operacion", jsonCalcu.getValue("operacion"));
+      object.put("numeroOne", jsonCalcu.getValue("numeroOne"));
+      object.put("numeroTwo", jsonCalcu.getValue("numeroTwo"));
+
+
+      String srtNumberOne = String.valueOf(jsonCalcu.getValue("numeroOne").toString());
+      double x = Double.parseDouble(srtNumberOne);
+
+      String srtNumberTwo = String.valueOf(jsonCalcu.getValue("numeroTwo").toString());
+      double y = Double.parseDouble(srtNumberTwo);
+
+      String op = String.valueOf(jsonCalcu.getValue("operacion").toString());
+      double result = io.operacionAritmetica(x, y, op);
+      object.put("resultado", result);*/
+
+
+//-----------------
+
+
+
+/*
+
+
+
+ /* @Override
+  public void handlePutCalculadora(RoutingContext routingContext) {
+    String calculadoraID = routingContext.request().getParam("id");
+    HttpServerResponse response = routingContext.response();
+
+    if (calculadoraID == null) {
+      sendError(400, response);
+    } else {
+      JsonObject jsonCalcu = routingContext.getBodyAsJson();
+      LG.info("PUT ID: ✔️✔️ {}", jsonCalcu.toString());
+
+      if (jsonCalcu == null) {
+        sendError(400, response);
+      } else {
+
+        calculadoraMap.put(calculadoraID, jsonCalcu);
+        response.end();
+      }
+    }
+
+  }*/
+
+

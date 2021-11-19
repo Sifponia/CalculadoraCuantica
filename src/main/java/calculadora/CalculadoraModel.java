@@ -17,6 +17,14 @@ public class CalculadoraModel {
   private double resultado;
   private JsonObject context;
 
+  public CalculadoraModel(Integer id, String operacion, double numeroOne, double numeroTwo, double resultado, JsonObject context) {
+    this.id = id;
+    this.operacion = operacion;
+    this.numeroOne = numeroOne;
+    this.numeroTwo = numeroTwo;
+    this.resultado = resultado;
+    this.context = context;
+  }
 
   public CalculadoraModel() {
     this.id = COUNTER.incrementAndGet();

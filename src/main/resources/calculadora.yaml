@@ -15,13 +15,16 @@ info:
   #-----
 servers:
   # Vert.X
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Sifponia/UsuaioApi/1.0.0
   - description: Vertx
     url: http://localhost:9090/calculadora
   #-----
 tags:
   - name: calculadora
     description: Devuelve todos los valores de las operaciones de la
-      calculadora
+      calculadora 🚀
   #-----
 paths:
   /calculadora:
@@ -58,7 +61,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       summary: Recibe dos valores para realizar un operacion         aritmetica.
-      operationId: creatCalculadora
+      operationId: crearCalculadora
       tags:
         - calculadora
       requestBody:
@@ -67,7 +70,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Calculadora'
       responses:
-        '201':
+        '200':
           description: Null response
         default:
           description: unexpected error
@@ -75,32 +78,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /calculadora/{calculadoraId}:
+  /calculadora/{id}:
     get:
       summary: Devuelve una operacion de la BBDD
       operationId: mostrarPorId
       tags:
         - calculadora
       parameters:
-        - name: calculadoraId
+        - name: id
           in: path
           required: true
-          description: The id of the pet to retrieve
+          description: La identificación de la operacion a recuperar.
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: Expected response to a valid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pets'
+                $ref: '#/components/schemas/Calculadora'
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /calculadora/{DeleteId}:
+    delete:
+      summary: Borra una operacion de la calculadora
+      operationId: borrarPorId
+      tags:
+        - calculadora
+      parameters:
+        - name: DeleteId
+          in: path
+          required: true
+          description: La identificación de la operacion a recuperar.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
 components:
   schemas:
     Calculadora:
@@ -108,7 +131,6 @@ components:
       required:
         - numeroOne
         - numerTwo
-        - result
       properties:
         id:
           type: integer
@@ -116,34 +138,24 @@ components:
           description: Id de identificación
         numeroOne:
           type: number
-          format: double
           description: Recibe un primer numero
         numerTwo:
           type: number
-          format: double
           description: Recibe un segundo numero
         result:
           type: number
-          format: double
           description: Guarda el resultado de la operacion
         context:
           type: object
-          format: double
           description: Guarda es esquema de la documentación de la Ap
-    Pets:
-      type: object
-      items:
-        $ref: '#/components/schemas/Calculadora'
     Error:
       type: object
       required:
-        - code
-        - message
+        - id
+        - result
       properties:
-        code:
+        id:
           type: integer
           format: int32
-        message:
-          type: string
-
-
+        result:
+          type: number
