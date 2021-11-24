@@ -8,6 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="CalculadoraCuantica" />
+        <module name="CalculadoraCuanticMejoras" />
+        <module name="CalculadoraCuantica Mejoras" />
       </profile>
     </annotationProcessing>
   </component>

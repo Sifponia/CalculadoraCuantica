@@ -1,4 +1,4 @@
-package calculadora;
+package calculos;
 
 public class ImpOperacionAritmetica implements IOperacionAritmetica {
   private double result = 0;

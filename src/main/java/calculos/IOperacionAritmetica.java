@@ -1,4 +1,4 @@
-package calculadora;
+package calculos;
 
 public interface IOperacionAritmetica {
   double suma(double x, double y);

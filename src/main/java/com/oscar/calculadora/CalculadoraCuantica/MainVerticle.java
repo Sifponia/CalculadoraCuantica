@@ -1,40 +1,28 @@
 package com.oscar.calculadora.CalculadoraCuantica;
 
 
-import calculadora.CalculadoraModel;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.http.*;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
-import io.vertx.ext.web.openapi.RouterBuilder;
 
+import io.vertx.ext.web.openapi.RouterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ImpHandleRouterService;
 import util.Varios;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MainVerticle extends AbstractVerticle {
+
 
   private static final Logger LG = LoggerFactory.getLogger(MainVerticle.class);
   private ImpHandleRouterService routerService = new ImpHandleRouterService();
 
 
-
-
-  private final int PORT = 65535;
-
-
-
-
+  private final int PORT = 9090;
+  private HttpServer server;
 
 
   public static Vertx vertx = Vertx.vertx();
@@ -50,106 +38,50 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
 
-    //Cargo los datos guardado en memoria
-    routerService.initialData();
+
+    routerService.initialDataSuma();
 
 
-    //Router
-    Router router = Router.router(vertx);
-
-
-    //Cors
-    Set<String> allowedHeaders = new HashSet<>();
-    allowedHeaders.add("x-requested-with");
-    allowedHeaders.add("Access-Control-Allow-Origin");
-    allowedHeaders.add("origin");
-    allowedHeaders.add("Content-Type");
-    allowedHeaders.add("accept");
-    allowedHeaders.add("X-PINGARUNER");
-
-    Set<HttpMethod> allowedMethods = new HashSet<>();
-    allowedMethods.add(HttpMethod.GET);
-    allowedMethods.add(HttpMethod.POST);
-    allowedMethods.add(HttpMethod.OPTIONS);
-
-    allowedMethods.add(HttpMethod.DELETE);
-    allowedMethods.add(HttpMethod.PATCH);
-    allowedMethods.add(HttpMethod.PUT);
-
-    router.route().handler(CorsHandler.create("http://localhost:4200").allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
-    //End Cors
-    router.route().handler(BodyHandler.create()); //::: Segunda opción sin usar cors
-
-
-    //GetHome
-    router.get("/").handler(a -> {
-      a.response()
-        .putHeader("content-type", "text/html")
-        .end("<ul>\n" +
-          "    <li><a href=\"http://localhost:\n" + this.PORT + "/calculadora\">Lista Operaciones de Calculadora</a></li>\n" +
-          "    <li><a href=\"http://localhost:\n" + this.PORT + "/apiCalculadora\">APi Calculadora</a></li>\n" +
-          "</ul>");
-    });
-
-
-    //ApiCalculadora
-    AtomicReference<JsonObject> calculadoraApi = new AtomicReference<JsonObject>();
-    RouterBuilder.create(this.vertx, "src/main/resources/calculadora.yaml")
-      .onFailure(Throwable::printStackTrace)
+    RouterBuilder.create(MainVerticle.vertx, "src/main/resources/calculadora.yaml")
       .onSuccess(routerBuilder -> {
-        calculadoraApi.set(routerBuilder.getOpenAPI().getOpenAPI());
-        router.get("/apiCalculadora").respond(ctx -> Future.succeededFuture(calculadoraApi));
+
+        //::::OPENAPI GET ALL
+        routerBuilder.operation("addList").handler(routingContext -> {
+          this.routerService.allSuma(routingContext);
+
+        });
+
+
+        //::::OPENAPI POST ADD
+        routerBuilder.operation("add").handler(routingContext -> {
+          this.routerService.handlePostSuma(routingContext);
+        });
+
+
+        //::::OPENAPI GET ID
+        routerBuilder.operation("findByIdSuma").handler(routingContext -> {
+          this.routerService.findByIdSuma(routingContext);
+        });
+
+
+        //:::::SERVER
+        Router routerr = routerBuilder.createRouter();
+        server = vertx
+          .createHttpServer(new HttpServerOptions().setPort(this.PORT).setHost("localhost"))
+          .requestHandler(routerr);
+        server.listen()
+          .onSuccess(server -> {
+            //LOG
+            System.out.println(Varios.vertexMensaje());
+            LG.info(" -- Server Port -- {} \uD83D\uDE80 \uD83D\uDE80 \uD83D\uDC4D \uD83D\uDC4D ", server.actualPort(),
+              MainVerticle.class.getName());
+
+          })
+          .onFailure(Throwable::printStackTrace);
+
+
       });
 
-
-    //GetList
-    router.get("/calculadora").handler(context -> {
-      this.routerService.allCalculadoraFuture(context);
-
-
-    });
-
-
-    //GetCalculadora
-    router.get("/calculadora/:id").handler(context -> {
-      this.routerService.handleGetCalculadoraFuture(context);
-
-    });
-
-
-    //PostCalculadora
-    router.post("/calculadora").handler(context -> {
-      this.routerService.handlePostCalculadora(context);
-
-
-    });
-
-    //DeleteCalculadora
-    router.delete("/calculadora/:id").handler(context -> {
-      this.routerService.handleDeleteCalculadora(context);
-    });
-
-    //PutCalculadora
-    router.put("/calculadora/:id").handler(context -> {
-      this.routerService.handlePutCalculadora(context);
-    });
-
-
-    //Server
-    vertx.createHttpServer().requestHandler(router).listen(this.PORT);
-
-    //LOG
-    System.out.println(Varios.vertexMensaje());
-    LG.info(" -- Server Port -- {} \uD83D\uDE80 \uD83D\uDE80 \uD83D\uDC4D \uD83D\uDC4D ", PORT,
-      MainVerticle.class.getName());
-
-
-
-    /*
-
-
-
-     */
 
   }
 }

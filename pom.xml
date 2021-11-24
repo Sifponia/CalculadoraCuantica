@@ -19,7 +19,7 @@
     <vertx.version>4.2.1</vertx.version>
     <junit-jupiter.version>5.7.0</junit-jupiter.version>
 
-    <main.verticle>com.oscar.calculadora.CalculadoraCuantica.MainVerticle</main.verticle>
+    <main.verticle>com.oscar.calculos.CalculadoraCuantica.MainVerticle</main.verticle>
     <launcher.class>io.vertx.core.Launcher</launcher.class>
   </properties>
 
@@ -36,6 +36,9 @@
   </dependencyManagement>
 
   <dependencies>
+
+
+
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
@@ -158,7 +161,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.oscar.calculadora.CalculadoraCuantica.MainVerticle</mainClass>
+              <mainClass>com.oscar.calculos.CalculadoraCuantica.MainVerticle</mainClass>
             </manifest>
           </archive>
         </configuration>

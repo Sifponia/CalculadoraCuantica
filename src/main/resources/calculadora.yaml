@@ -22,28 +22,19 @@ servers:
     url: http://localhost:9090/calculadora
   #-----
 tags:
-  - name: calculadora
-    description: Devuelve todos los valores de las operaciones de la
-      calculadora 🚀
+  - name: Calculadora
+    description: Calculadora
   #-----
 paths:
-  /calculadora:
+  '/addall':
     get:
-      summary: Lista de operaciones aritmeticas
-      operationId: listaCalculadora
+      summary: Lista de calculos
+      operationId: addList
       tags:
-        - calculadora
-      parameters:
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
-          required: false
-          schema:
-            type: integer
-            format: int32
+        - Calculadora
       responses:
         '200':
-          description: An paged array of pets
+          description: Permitir listar el histórico de forma paginada
           headers:
             x-next:
               description: A link to the next page of responses
@@ -53,17 +44,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Calculadora'
-        default:
-          description: unexpected error
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Sever Error
+
+  '/add':
+    post:
+      summary: Recibe dos entradas un numero (x) y (y)
+      operationId: add
+      tags:
+        - Calculadora
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resultado'
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Calculadora'
+
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
+
+  '/resta':
     post:
-      summary: Recibe dos valores para realizar un operacion         aritmetica.
-      operationId: crearCalculadora
+      summary: recibe dos dos entradas un numero (x) y (y)
+      operationId: restaId
+      parameters:
+        - in: query
+          name: x
+          description: number
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: y
+          description: x
+          required: true
+          schema:
+            type: number
       tags:
-        - calculadora
+        - Calculadora
       requestBody:
         content:
           application/json:
@@ -71,52 +103,30 @@ paths:
               $ref: '#/components/schemas/Calculadora'
       responses:
         '200':
-          description: Null response
-        default:
-          description: unexpected error
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-  /calculadora/{id}:
+                $ref: '#/components/schemas/Calculadora'
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
+
+  '/addall/{id}':
     get:
-      summary: Devuelve una operacion de la BBDD
-      operationId: mostrarPorId
-      tags:
-        - calculadora
+      summary: Permitir obtener histórico por ID
+      operationId: findByIdSuma
       parameters:
         - name: id
           in: path
           required: true
-          description: La identificación de la operacion a recuperar.
+          example: 1
+          description: Recupera un ID de la operacion
           schema:
             type: number
-      responses:
-        '200':
-          description: Expected response to a valid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Calculadora'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /calculadora/{DeleteId}:
-    delete:
-      summary: Borra una operacion de la calculadora
-      operationId: borrarPorId
       tags:
-        - calculadora
-      parameters:
-        - name: DeleteId
-          in: path
-          required: true
-          description: La identificación de la operacion a recuperar.
-          schema:
-            type: number
+        - Calculadora
       responses:
         '200':
           description: Expected response to a valid request
@@ -124,38 +134,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Calculadora'
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
 components:
   schemas:
     Calculadora:
       type: object
       required:
-        - numeroOne
-        - numerTwo
+        - x
+        - y
       properties:
         id:
           type: integer
           format: int64
           description: Id de identificación
-        numeroOne:
+          example: 1
+        x:
           type: number
           description: Recibe un primer numero
-        numerTwo:
+          example: 1.50
+
+        y:
           type: number
           description: Recibe un segundo numero
+          example: 1
+        operacion:
+          type: number
+          description: Recibe el tipo de operacion
+          example: +
         result:
           type: number
           description: Guarda el resultado de la operacion
-        context:
-          type: object
-          description: Guarda es esquema de la documentación de la Ap
-    Error:
+          example: 2.50
+    Resultado:
       type: object
-      required:
-        - id
-        - result
       properties:
-        id:
-          type: integer
-          format: int32
         result:
           type: number
+      example: 2.50
+

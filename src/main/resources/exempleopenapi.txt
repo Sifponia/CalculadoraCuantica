@@ -117,3 +117,343 @@ components:
           type: string
           example: 408-867-5309
       type: object
+
+
+
+/***************VERSION GET - PUT- POS- DELETED -************
+
+
+openapi: 3.0.0
+#-----
+info:
+  title: Calculadora
+  description: calculos
+  version: 1.0.0
+  termsOfService: 'http://swagger.io/terms/'
+  #-----
+  contact:
+    email: otabora@outlook.es
+  #-----
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  #-----
+servers:
+  # Vert.X
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Sifponia/UsuaioApi/1.0.0
+  - description: Vertx
+    url: http://localhost:9090/calculos
+  #-----
+tags:
+  - name: calculos
+    description: Devuelve todos los valores de las operaciones de la
+      calculos 🚀
+  #-----
+paths:
+  /calculos:
+    get:
+      summary: Lista de operaciones aritmeticas
+      operationId: listaCalculadora
+      tags:
+        - calculos
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: An paged array of pets
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Recibe dos valores para realizar un operacion         aritmetica.
+      operationId: crearCalculadora
+      tags:
+        - calculos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calculadora'
+      responses:
+        '200':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /calculos/{id}:
+    get:
+      summary: Devuelve una operacion de la BBDD
+      operationId: mostrarPorId
+      tags:
+        - calculos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: La identificación de la operacion a recuperar.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /calculos/{DeleteId}:
+    delete:
+      summary: Borra una operacion de la calculos
+      operationId: borrarPorId
+      tags:
+        - calculos
+      parameters:
+        - name: DeleteId
+          in: path
+          required: true
+          description: La identificación de la operacion a recuperar.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+components:
+  schemas:
+    Calculadora:
+      type: object
+      required:
+        - numeroOne
+        - numerTwo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Id de identificación
+        numeroOne:
+          type: number
+          description: Recibe un primer numero
+        numerTwo:
+          type: number
+          description: Recibe un segundo numero
+        result:
+          type: number
+          description: Guarda el resultado de la operacion
+        context:
+          type: object
+          description: Guarda es esquema de la documentación de la Ap
+    Error:
+      type: object
+      required:
+        - id
+        - result
+      properties:
+        id:
+          type: integer
+          format: int32
+        result:
+          type: number
+*/---------------------------------************************************************+
+
+
+
+
+/***********************23:54
+openapi: 3.0.0
+#-----
+info:
+  title: Calculadora
+  description: calculos
+  version: 1.0.0
+  termsOfService: 'http://swagger.io/terms/'
+  #-----
+  contact:
+    email: otabora@outlook.es
+  #-----
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  #-----
+servers:
+  # Vert.X
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Sifponia/UsuaioApi/1.0.0
+  - description: Vertx
+    url: http://localhost:9090/calculos
+  #-----
+tags:
+  - name: Calculadora
+    description: Calculadora
+  #-----
+paths:
+  '/calculos':
+    get:
+      summary: Lista de calculos
+      operationId: listaCalculosId
+      tags:
+        - Calculadora
+      responses:
+        '200':
+          description: Permitir listar el histórico de forma paginada
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Sever Error
+
+  '/suma':
+    post:
+      summary: recibe dos dos entradas un numero (x) y (y)
+      operationId: sumaId
+      tags:
+        - Calculadora
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
+
+  '/resta':
+    post:
+      summary: recibe dos dos entradas un numero (x) y (y)
+      operationId: restaId
+      parameters:
+        - in: query
+          name: x
+          description: number
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: y
+          description: x
+          required: true
+          schema:
+            type: number
+      tags:
+        - Calculadora
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Calculadora'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resultado'
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
+
+  '/calculos/{id}':
+    get:
+      summary: Permitir obtener histórico por ID
+      operationId: mostrarPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          example: 1
+          description: Recupera un ID de la operacion
+          schema:
+            type: number
+      tags:
+        - Calculadora
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calculadora'
+        '404':
+          description: Failed. Request not found
+        '405':
+          description: Failed. Method Not Allowed
+components:
+  schemas:
+    Calculadora:
+      type: object
+      required:
+        - numeroOne
+        - numerTwo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Id de identificación
+          example: 1
+        x:
+          type: number
+          description: Recibe un primer numero
+          example: 1.50
+        y:
+          type: number
+          description: Recibe un segundo numero
+          example: 1
+        result:
+          type: number
+          description: Guarda el resultado de la operacion
+          example: 2.50
+    Resultado:
+      type: object
+      properties:
+        result:
+          type: number
+      example: 2.50
+

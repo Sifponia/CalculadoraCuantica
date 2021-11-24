@@ -7,21 +7,33 @@ import io.vertx.ext.web.RoutingContext;
 
 public interface IHandleRouter {
 
-  void addCalculadora(JsonObject calculadora);
 
-  void sendError(int statusCode, HttpServerResponse response);
 
-  void initialData();
 
-  Future<Void> allCalculadoraFuture(RoutingContext routingContext);
+  //Verbos
+  void handlePostSuma(RoutingContext routingContext);
 
-  Future<Void> handleGetCalculadoraFuture(RoutingContext routingContext);
+  void handlePostResta(RoutingContext routingContext);
 
-  void handlePostCalculadora(RoutingContext routingContext);
+  //Inicio Data
+  void initialDataResta();
 
-  void handlePutCalculadora(RoutingContext routingContext);
+  void initialDataSuma();
 
-  void handleDeleteCalculadora(RoutingContext routingContext);
+  //Añadir Datos
+  void addResta(JsonObject calculadora);
+
+  void addSuma(JsonObject calculadora);
+
+  //Obtener Historial
+  void allSuma(RoutingContext routingContext);
+
+  void allResta(RoutingContext routingContext);
+
+  //Buscar Por Id
+  void findByIdSuma(RoutingContext routingContext);
+
+  void findByIResta(RoutingContext routingContext);
 
 
 }
