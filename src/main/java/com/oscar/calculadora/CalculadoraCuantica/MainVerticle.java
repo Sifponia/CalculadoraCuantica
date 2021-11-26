@@ -19,8 +19,6 @@ public class MainVerticle extends AbstractVerticle {
 
   private static final Logger LG = LoggerFactory.getLogger(MainVerticle.class);
   private ImpHandleRouterService routerService = new ImpHandleRouterService();
-
-
   private final int PORT = 9090;
   private HttpServer server;
 
@@ -40,6 +38,7 @@ public class MainVerticle extends AbstractVerticle {
 
 
     routerService.initialDataSuma();
+    routerService.initialDataResta();
 
 
     RouterBuilder.create(MainVerticle.vertx, "src/main/resources/calculadora.yaml")
@@ -61,6 +60,28 @@ public class MainVerticle extends AbstractVerticle {
         //::::OPENAPI GET ID
         routerBuilder.operation("findByIdSuma").handler(routingContext -> {
           this.routerService.findByIdSuma(routingContext);
+        });
+
+
+        //::::OPENAPI POST Subtraction
+        routerBuilder.operation("Subtraction").handler(routingContext -> {
+          this.routerService.handlePostResta(routingContext);
+        });
+
+
+
+
+        //::::OPENAPI GET Subtractiona
+        routerBuilder.operation("SubtractionAll").handler(routingContext -> {
+          this.routerService.allResta(routingContext);
+        });
+
+
+
+
+        //::::OPENAPI GET ID Subtraction
+        routerBuilder.operation("findByIdResta").handler(routingContext -> {
+          this.routerService.findByIResta(routingContext);
         });
 
 

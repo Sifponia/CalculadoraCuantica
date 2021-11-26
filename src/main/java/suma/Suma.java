@@ -10,14 +10,15 @@ public class Suma {
   private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
   private Integer id;
+
   private String operacion;
   private double x;
   private double y;
   private double resultado;
 
-  public Suma(Integer id, String operacion, double x, double y, double resultado) {
+  public Suma(Integer id, double x, double y, double resultado) {
     this.id = id;
-    this.operacion = operacion;
+
     this.x = x;
     this.y = y;
     this.resultado = resultado;
@@ -25,5 +26,6 @@ public class Suma {
 
   public Suma() {
     this.id = COUNTER.incrementAndGet();
+    this.operacion = "+";
   }
 }
