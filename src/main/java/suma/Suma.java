@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Data
 public class Suma {
 
-  private static final AtomicInteger COUNTER = new AtomicInteger(0);
+  public static final AtomicInteger COUNTER = new AtomicInteger(0);
 
   private Integer id;
 

@@ -26,14 +26,12 @@ public interface IHandleRouter {
   void addSuma(JsonObject calculadora);
 
   //Obtener Historial
-  void allSuma(RoutingContext routingContext);
-
-  void allResta(RoutingContext routingContext);
+  void historico(RoutingContext routingContext);
 
   //Buscar Por Id
-  void findByIdSuma(RoutingContext routingContext);
+  void findById(RoutingContext routingContext);
 
-  void findByIResta(RoutingContext routingContext);
+
 
 
 }

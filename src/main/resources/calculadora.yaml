@@ -26,10 +26,10 @@ tags:
     description: Calculadora
   #-----
 paths:
-  '/addall':
+  '/historico':
     get:
       summary: Lista de suma
-      operationId: addList
+      operationId: historico
       tags:
         - Calculadora
       responses:
@@ -126,7 +126,7 @@ paths:
         '405':
           description: Failed. Method Not Allowed
 
-  '/add/{id}':
+  '/historico/{id}':
     get:
       summary: Permitir obtener histórico por ID
       operationId: findByIdSuma
@@ -233,4 +233,6 @@ components:
         result:
           type: number
       example: 1.2
+
+
 

@@ -22,8 +22,6 @@ public class ImpHandleRouterService implements IHandleRouter {
   ///:::: Atributos Globales dentro de ImpHandleRouterService
   private static final Logger LG = LoggerFactory.getLogger(ImpHandleRouterService.class);
   private ImpOperacionAritmetica io = new ImpOperacionAritmetica();
-  final static List<JsonObject> suma = new ArrayList<>();
-  final static List<JsonObject> resta = new ArrayList<>();
   final static List<JsonObject> historico = new ArrayList<>();
 
 
@@ -42,7 +40,7 @@ public class ImpHandleRouterService implements IHandleRouter {
 
     addSuma(JsonObject.mapFrom(suma));
     LG.info("Post : ✔️✔️ {}", suma.toString(), " OPERACION: {} ", suma.toString());
-    suma.setOperacion("+");
+
 
     routingContext.response()
       .setStatusCode(200)
@@ -76,26 +74,10 @@ public class ImpHandleRouterService implements IHandleRouter {
     suma3.setY(2);
     suma3.setResultado(4);
 
-    Suma suma4 = new Suma();
-    suma4.setId(4);
-    suma.setOperacion("+");
-    suma4.setX(2);
-    suma4.setY(2);
-    suma4.setResultado(4);
-
-    Suma suma5 = new Suma();
-    suma.setOperacion("+");
-    suma5.setId(5);
-    suma5.setX(5);
-    suma5.setY(3);
-    suma5.setResultado(8);
-
 
     addSuma(JsonObject.mapFrom(suma));
     addSuma(JsonObject.mapFrom(suma2));
     addSuma(JsonObject.mapFrom(suma3));
-    addSuma(JsonObject.mapFrom(suma4));
-    addSuma(JsonObject.mapFrom(suma5));
 
 
   }
@@ -103,14 +85,20 @@ public class ImpHandleRouterService implements IHandleRouter {
 
   @Override
   public void addSuma(JsonObject sumaJson) {
-    suma.add(sumaJson);
+    historico.add(sumaJson);
+    if (historico.size() >= 10) {
+      historico.remove(0);
+    } else {
+
+    }
+
 
   }
 
 
   @Override
-  public void allSuma(RoutingContext routingContext) {
-
+  public void historico(RoutingContext routingContext) {
+    System.out.println("-------" + historico.size());
 
     routingContext
       .response()
@@ -121,22 +109,12 @@ public class ImpHandleRouterService implements IHandleRouter {
   }
 
   private List<JsonObject> getAllAdd() {
-
-
-    System.out.println("-------" + suma.size());
-    if (suma.size() > 8) {
-      suma.remove(0);
-      return suma;
-    } else {
-      return suma;
-    }
-
-    //return suma;
+    return historico;
   }
 
 
   @Override
-  public void findByIdSuma(RoutingContext routingContext) {
+  public void findById(RoutingContext routingContext) {
     RequestParameters params = routingContext.get("parsedParameters");
     Integer id = params.pathParameter("id").getInteger();
 
@@ -164,12 +142,9 @@ public class ImpHandleRouterService implements IHandleRouter {
 
   public JsonArray allSumaResult() {
     JsonArray arr = new JsonArray();
-    suma.forEach(arr::add);
-    resta.forEach(arr::add);
-
-
+    historico.forEach(arr::add);
     List<Object> listPageable = Pageable.getPage(arr.stream()
-      .collect(Collectors.toList()), 1, 10);
+      .collect(Collectors.toList()), 1, 100);
     return new JsonArray().add(listPageable);
 
   }
@@ -199,21 +174,21 @@ public class ImpHandleRouterService implements IHandleRouter {
   @Override
   public void initialDataResta() {
     Resta resta = new Resta();
-    resta.setId(1);
+    resta.setId(4);
     resta.setX(2);
     resta.setOperacion("-");
     resta.setY(2);
     resta.setResultado(0);
 
     Resta resta2 = new Resta();
-    resta2.setId(2);
+    resta2.setId(5);
     resta2.setX(5);
     resta.setOperacion("-");
     resta2.setY(3);
     resta2.setResultado(2);
 
     Resta resta3 = new Resta();
-    resta3.setId(3);
+    resta3.setId(6);
     resta3.setX(10);
     resta.setOperacion("-");
     resta3.setY(9);
@@ -230,69 +205,26 @@ public class ImpHandleRouterService implements IHandleRouter {
 
   @Override
   public void addResta(JsonObject restaJson) {
-    resta.add(restaJson);
+    historico.add(restaJson);
+
+    if (historico.size() >= 10) {
+      historico.remove(0);
+
+    } else {
+
+    }
+
 
   }
-
 
   private List<JsonObject> getAllSusb() {
-    System.out.println("-------" + resta.size());
-    if (resta.size() >= 1000) {
-      resta.remove(0);
-      return resta;
-    } else {
-      return resta;
-    }
+    return historico;
+
 
   }
 
 
-  public JsonArray SusbResult() {
-    JsonArray arr = new JsonArray();
-    resta.forEach(arr::add);
-    List<Object> listPageable = Pageable.getPage(arr.stream()
-      .collect(Collectors.toList()), 1, 10);
 
-    System.out.println("-------" + listPageable.size());
-    return new JsonArray().add(listPageable);
-
-  }
-
-  @Override
-  public void allResta(RoutingContext routingContext) {
-    routingContext
-      .response()
-      .setStatusCode(200)
-      .putHeader("content-type", "application/json")
-      .end(SusbResult().encodePrettily());
-  }
-
-
-  @Override
-  public void findByIResta(RoutingContext routingContext) {
-    RequestParameters params = routingContext.get("parsedParameters");
-    Integer id = params.pathParameter("id").getInteger();
-
-    Optional<JsonObject> restaOptional = getAllSusb()
-      .stream()
-      .filter(p -> p.getInteger("id").equals(id))
-      .findFirst(); // <3>
-    if (restaOptional.isPresent()) {
-
-      LG.info("Get ID: \uD83D\uDD0E\uD83D\uDD0E {}", restaOptional.toString());
-      routingContext
-        .response()
-        .setStatusCode(200)
-        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-        .end(restaOptional.get().toBuffer()); // (4)
-    } else {
-
-      System.out.println(">>>>>>>: " + restaOptional.toString());
-      routingContext.fail(404, new Exception("Sub not found")); // (5
-
-    }
-
-  }
 
 }
 

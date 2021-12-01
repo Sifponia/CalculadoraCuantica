@@ -36,7 +36,6 @@ public class MainVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
 
-
     routerService.initialDataSuma();
     routerService.initialDataResta();
 
@@ -44,9 +43,9 @@ public class MainVerticle extends AbstractVerticle {
     RouterBuilder.create(MainVerticle.vertx, "src/main/resources/calculadora.yaml")
       .onSuccess(routerBuilder -> {
 
-        //::::OPENAPI GET ALL
-        routerBuilder.operation("addList").handler(routingContext -> {
-          this.routerService.allSuma(routingContext);
+        //::::OPENAPI GET ALL Historic
+        routerBuilder.operation("historico").handler(routingContext -> {
+          this.routerService.historico(routingContext);
 
         });
 
@@ -59,7 +58,7 @@ public class MainVerticle extends AbstractVerticle {
 
         //::::OPENAPI GET ID
         routerBuilder.operation("findByIdSuma").handler(routingContext -> {
-          this.routerService.findByIdSuma(routingContext);
+          this.routerService.findById(routingContext);
         });
 
 
@@ -71,18 +70,11 @@ public class MainVerticle extends AbstractVerticle {
 
 
 
-        //::::OPENAPI GET Subtractiona
-        routerBuilder.operation("SubtractionAll").handler(routingContext -> {
-          this.routerService.allResta(routingContext);
-        });
 
-
-
-
-        //::::OPENAPI GET ID Subtraction
+        /*//::::OPENAPI GET ID Subtraction
         routerBuilder.operation("findByIdResta").handler(routingContext -> {
           this.routerService.findByIResta(routingContext);
-        });
+        });*/
 
 
         //:::::SERVER

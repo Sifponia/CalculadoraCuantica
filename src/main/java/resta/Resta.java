@@ -2,13 +2,14 @@ package resta;
 
 
 import lombok.Data;
+import suma.Suma;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class Resta {
 
-  private static final AtomicInteger COUNTER = new AtomicInteger(0);
+ // private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
   private Integer id;
   private double x;
@@ -19,7 +20,7 @@ public class Resta {
 
 
   public Resta() {
-    this.id = COUNTER.incrementAndGet();
+    this.id = Suma.COUNTER.incrementAndGet();
     this.operacion = "-";
   }
 
